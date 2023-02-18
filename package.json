@@ -1,0 +1,17 @@
+{
+  "name": "simple-can-jump-with-ray-box2dwasm-webgl-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "rollup.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "rollup -cwm",
+    "del-bundle-map": "del /f /q /s .\\public\\js\\bundle.js.map",
+    "bundle": "rollup -cm",
+    "minify": "uglifyjs public/js/bundle.js -o public/js/bundle.js",
+    "release": "npm run bundle && npm run minify && npm run del-bundle-map"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
