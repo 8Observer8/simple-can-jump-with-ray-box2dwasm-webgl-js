@@ -21,6 +21,8 @@ const playerPosition = vec3.fromValues(20, 50, 0);
 const playerSize = vec3.fromValues(20, 20, 1);
 let playerBody;
 
+const fixtures = [];
+
 const platforms = [];
 platforms.push({ pos: vec3.fromValues(50, 70, 0), size: vec3.fromValues(20, 20, 1) });
 platforms.push({ pos: vec3.fromValues(100, 100, 0), size: vec3.fromValues(20, 20, 1) });
@@ -111,6 +113,7 @@ async function init() {
     metaData[getPointer(groundFixture)] = {
         name: "ground"
     };
+    fixtures.push(groundFixture);
 
     for (var i = 0; i < platforms.length; i++) {
         const bodyDef = new b2BodyDef();
@@ -125,6 +128,7 @@ async function init() {
         metaData[getPointer(fixture)] = {
             name: `platform_${i}`
         };
+        fixtures.push(fixture);
     }
 
     // Box
@@ -155,16 +159,17 @@ async function init() {
     //     }
     // });
 
-    downRayCallback = Object.assign(new JSRayCastCallback(), {
-        ReportFixture: (fixture_p, point_p, normal_p, fraction) => {
-            const fixture = wrapPointer(fixture_p, b2Fixture);
-            const name = metaData[getPointer(fixture)].name;
-            if (name === "ground") {
-                grounded = true;
-            }
-            return 0;
-        }
-    });
+    // downRayCallback = Object.assign(new JSRayCastCallback(), {
+    //     ReportFixture: (fixture_p, point_p, normal_p, fraction) => {
+    //         const fixture = wrapPointer(fixture_p, b2Fixture);
+    //         const name = metaData[getPointer(fixture)].name;
+    //         if (name === "ground") {
+    //             // grounded = true;
+    //             console.log("downRayCallback");
+    //         }
+    //         return 0;
+    //     }
+    // });
 
     function keyboardHandler() {
         if (keyboard.pressed("KeyW") || keyboard.pressed("ArrowUp")) {
@@ -237,7 +242,7 @@ async function init() {
 
         // Down ray
         raycaster.drawLine([playerPosition[0], playerPosition[1] - 5],
-            [playerPosition[0], playerPosition[1] - 15], [1, 0, 0]);
+            [playerPosition[0], playerPosition[1] - 15], [1, 1, 1]);
         const point1 = new b2Vec2(playerPosition[0] / pixelsPerMeter,
             (playerPosition[1] - 5) / pixelsPerMeter);
         const point2 = new b2Vec2(playerPosition[0] / pixelsPerMeter,
@@ -247,16 +252,20 @@ async function init() {
         const input = {
             p1: point1,
             p2: point2,
-            maxFraction: 2
+            maxFraction: 1
         };
         const output = {
-            normal: new b2Vec2(0, 1),
+            normal: new b2Vec2(0, 0),
             fraction: 1
         };
-        const f = playerFixture.RayCast(input, output);
-        console.log(f);
 
-        // console.log(`grounded = ${grounded}`);
+        grounded = false;
+        for (let i = 0; i < fixtures.length; i++) {
+            grounded = fixtures[i].RayCast(output, input);
+            if (grounded)
+                break;
+        }
+        console.log(`grounded = ${grounded}`);
     }
 
     (function animationLoop(prevMs) {
