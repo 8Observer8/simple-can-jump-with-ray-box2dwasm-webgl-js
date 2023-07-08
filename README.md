@@ -1,3 +1,5 @@
+Ray casting doesn't work: [Issue](https://github.com/Birch-san/box2d-wasm/issues/58)
+
 [Run in browser](https://8observer8.github.io/webgl10-js/simple-can-jump-with-ray-box2dwasm-webgl-js/)
 
 Run in sanboxes:
